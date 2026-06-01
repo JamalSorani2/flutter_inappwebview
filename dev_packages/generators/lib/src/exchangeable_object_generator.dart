@@ -196,18 +196,16 @@ class ExchangeableObjectGenerator
         classBuffer.writeln("$fieldName;");
       } else {
         final fieldLibrary = fieldElement.library;
-        if (fieldLibrary != null) {
-          ParsedLibraryResult parsed =
-              fieldLibrary.session.getParsedLibraryByElement(fieldLibrary)
-                  as ParsedLibraryResult;
-          final fieldBody = parsed
-              .getFragmentDeclaration(fieldElement.firstFragment)
-              ?.node
-              .toString()
-              .replaceAll(className ?? '', extClassName);
-          classBuffer.writeln("$fieldBody;");
-        }
-      }
+        ParsedLibraryResult parsed =
+            fieldLibrary.session.getParsedLibraryByElement(fieldLibrary)
+                as ParsedLibraryResult;
+        final fieldBody = parsed
+            .getFragmentDeclaration(fieldElement.firstFragment)
+            ?.node
+            .toString()
+            .replaceAll(className ?? '', extClassName);
+        classBuffer.writeln("$fieldBody;");
+            }
     }
 
     if (superClass != null) {
@@ -253,34 +251,32 @@ class ExchangeableObjectGenerator
     }
     if (hasCustomConstructor) {
       final library = visitor.constructor.library;
-      if (library != null) {
-        ParsedLibraryResult parsed =
-            library.session.getParsedLibraryByElement(library)
-                as ParsedLibraryResult;
-        final constructorBody = parsed
-            .getFragmentDeclaration(visitor.constructor.firstFragment)
-            ?.node;
-        if (constructorBody != null) {
-          var generatedConstructor = constructorBody
-              .toString()
-              .replaceAll(className ?? '', extClassName)
-              .replaceAll("@ExchangeableObjectConstructor()", "");
+      ParsedLibraryResult parsed =
+          library.session.getParsedLibraryByElement(library)
+              as ParsedLibraryResult;
+      final constructorBody = parsed
+          .getFragmentDeclaration(visitor.constructor.firstFragment)
+          ?.node;
+      if (constructorBody != null) {
+        var generatedConstructor = constructorBody
+            .toString()
+            .replaceAll(className ?? '', extClassName)
+            .replaceAll("@ExchangeableObjectConstructor()", "");
 
-          // Replace type names ending with _ (e.g., CompressFormat_? -> CompressFormat?)
-          // First replace _. (type access) then _? (nullable type) then _ (type name)
-          generatedConstructor = generatedConstructor
-              .replaceAll("_.", ".")
-              .replaceAll("_?", "?")
-              .replaceAll("_>", ">")
-              .replaceAllMapped(
-                RegExp(r'([A-Z][a-zA-Z0-9]*)_\b'),
-                (match) => match.group(1)!,
-              );
+        // Replace type names ending with _ (e.g., CompressFormat_? -> CompressFormat?)
+        // First replace _. (type access) then _? (nullable type) then _ (type name)
+        generatedConstructor = generatedConstructor
+            .replaceAll("_.", ".")
+            .replaceAll("_?", "?")
+            .replaceAll("_>", ">")
+            .replaceAllMapped(
+              RegExp(r'([A-Z][a-zA-Z0-9]*)_\b'),
+              (match) => match.group(1)!,
+            );
 
-          classBuffer.writeln(generatedConstructor);
-        }
+        classBuffer.writeln(generatedConstructor);
       }
-    } else if (constructorFields.length > 0) {
+        } else if (constructorFields.length > 0) {
       if (visitor.constructor.isConst) {
         classBuffer.write('const ');
       }
@@ -580,31 +576,29 @@ class ExchangeableObjectGenerator
         continue;
       }
       final methodLibrary = methodElement.library;
-      if (methodLibrary != null) {
-        ParsedLibraryResult parsed =
-            methodLibrary.session.getParsedLibraryByElement(methodLibrary)
-                as ParsedLibraryResult;
-        final methodBody = parsed
-            .getFragmentDeclaration(methodElement.firstFragment)
-            ?.node;
-        if (methodBody != null) {
-          final docs = methodElement.documentationComment;
-          if (docs != null) {
-            classBuffer.writeln(docs);
-          }
-          final fieldSupportedDocs = Util.getSupportedDocs(
-            _coreCheckerSupportedPlatforms,
-            methodElement,
-          );
-          if (fieldSupportedDocs != null) {
-            classBuffer.writeln(fieldSupportedDocs);
-          }
-          classBuffer.writeln(
-            methodBody.toString().replaceAll(className ?? '', extClassName),
-          );
+      ParsedLibraryResult parsed =
+          methodLibrary.session.getParsedLibraryByElement(methodLibrary)
+              as ParsedLibraryResult;
+      final methodBody = parsed
+          .getFragmentDeclaration(methodElement.firstFragment)
+          ?.node;
+      if (methodBody != null) {
+        final docs = methodElement.documentationComment;
+        if (docs != null) {
+          classBuffer.writeln(docs);
         }
+        final fieldSupportedDocs = Util.getSupportedDocs(
+          _coreCheckerSupportedPlatforms,
+          methodElement,
+        );
+        if (fieldSupportedDocs != null) {
+          classBuffer.writeln(fieldSupportedDocs);
+        }
+        classBuffer.writeln(
+          methodBody.toString().replaceAll(className ?? '', extClassName),
+        );
       }
-    }
+        }
 
     if (annotation.read("toMapMethod").boolValue &&
         (!visitor.methods.containsKey("toMap") ||
